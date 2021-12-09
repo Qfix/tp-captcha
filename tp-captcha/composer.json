@@ -1,0 +1,22 @@
+{
+    "name": "fixed/tp-captcha",
+    "description": "兼容tp6以上，前后端分离图片验证码",
+    "type": "library",
+
+    "authors": [
+        {
+            "name": "qinHao",
+            "email": "631256435@qq.com"
+        }
+    ],
+    "require": {
+        "php":">=7.1.0",
+        "topthink/think-cache": "^1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "fixed\\captcha\\": "src"
+        }
+
+    }
+}
