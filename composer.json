@@ -2,6 +2,7 @@
     "name": "fixed/tp-captcha",
     "description": "兼容tp6以上，前后端分离图片验证码",
     "type": "library",
+    "license": "MIT",
 
     "authors": [
         {
