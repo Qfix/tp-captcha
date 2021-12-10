@@ -108,35 +108,18 @@ class Captcha
      */
     public function check($uniqid, $code, $id = '')
     {
+        $key = $uniqid . $id;
         // 获取并删除缓存
-        $verify_code = Cache::pull($uniqid);
-        if(empty($verify_code))
-        {
+        $verify_code = Cache::get($key);
+        if (empty($verify_code)) {
             return false;
         }
-        $key = $this->authcode($this->seKey) . $id;
         if ($this->authcode(strtoupper($code)) == $verify_code) {
             $this->reset && Cache::delete($key);
             return true;
         }
 
         return false;
-    }
-
-
-    // 获取原验证码并写入缓存
-    private function writeCache($id = '')
-    {
-        $key = $this->authcode($this->seKey) . $id;
-        // 验证码不能为空
-        $secode = Cache::get($key);
-        if (empty($secode) || empty($secode['verify_code'])) {
-            return false;
-        }
-        $uniqid = md5($secode['verify_code']);
-        // 写入缓存
-        Cache::set($uniqid, $secode['verify_code'], $this->expire);
-        return $uniqid;
     }
 
     /**
@@ -206,12 +189,9 @@ class Captcha
         }
 
         // 保存验证码
-        $key = $this->authcode($this->seKey);
+        $key = $this->authcode(strtoupper(session_create_id()));
         $code = $this->authcode(strtoupper(implode('', $code)));
-        $secode = [];
-        $secode['verify_code'] = $code; // 把校验码保存到缓存
-        $secode['verify_time'] = time(); // 验证码创建时间
-        Cache::set($key . $id, $secode, 60);
+        Cache::set($key . $id, $code, $this->expire);
 
         ob_start();
         // 输出图像
@@ -220,7 +200,7 @@ class Captcha
         imagedestroy($this->im);
 
         $result = [
-            'uniqid' => $this->writeCache($id),
+            'uniqid' => $key,
             'content' => 'data:image/jpg/png;base64,' . base64_encode($content),
         ];
         return $result;
